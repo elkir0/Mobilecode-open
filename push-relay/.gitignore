@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+# Secrets & runtime state — never commit.
+node_modules/
+data/
+.env
+config/*.p8
+*.log

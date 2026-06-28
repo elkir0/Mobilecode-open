@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: Apache-2.0
+# Mobilecode-open — fastlane lanes.
+# `beta`: build web + cap sync, sign via match, archive, upload to TestFlight.
+# Run with: `bundle exec fastlane beta` (CI does this on tag v*).
+# Secrets (see docs/ci.md): ASC_API_KEY_*, MATCH_PASSWORD, MATCH_GIT_URL.
+
+APP_IDENTIFIER = "ai.opencode.remote.ios"
+
+default_platform(:ios)
+
+lane :beta do
+  # 1) Build the web bundle + cap sync (refreshes ios/App/App/public + plugin wiring)
+  sh("cd .. && npm run build:ios")
+
+  # 2) Signing certs + provisioning profile from a private match repo
+  match(
+    type: "appstore",
+    readonly: true,
+    app_identifier: APP_IDENTIFIER
+  )
+
+  # 3) App Store Connect API key (TestFlight upload without interactive 2FA)
+  api_key = app_store_connect_api_key(
+    key_id: ENV["ASC_API_KEY_KEY_ID"],
+    issuer_id: ENV["ASC_API_KEY_ISSUER_ID"],
+    key_content: ENV["ASC_API_KEY_P8_BASE64"] ? Base64.decode64(ENV["ASC_API_KEY_P8_BASE64"]) : nil,
+    duration: 1_200,
+    in_house: false
+  )
+
+  # 4) Archive + export for App Store
+  gym(
+    scheme: "App",
+    project: "App/App.xcodeproj",
+    export_method: "app-store",
+    clean: true,
+    include_bitcode: false
+  )
+
+  # 5) Upload to TestFlight
+  pilot(
+    api_key: api_key,
+    skip_waiting_for_build_processing: true
+  )
+end

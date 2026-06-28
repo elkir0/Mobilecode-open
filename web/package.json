@@ -1,0 +1,40 @@
+{
+  "name": "mobilecode-open-web",
+  "private": true,
+  "version": "1.3.9",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc -b && vite build",
+    "test:i18n": "node --experimental-strip-types src/i18n.test.mjs",
+    "preview": "vite preview --host",
+    "cap:sync": "npx cap sync",
+    "cap:add:android": "npx cap add android",
+    "mock": "node ../scripts/mock-opencode.mjs 4096",
+    "test:ui": "node src/ui-regression.test.mjs",
+    "test:settings": "node src/settings-regression.test.mjs",
+    "test:model": "node src/model-regression.test.mjs",
+    "test:mock": "node src/mock-server.test.mjs",
+    "test:core": "node --experimental-strip-types src/mock-server.test.mjs && node --experimental-strip-types src/event-source.test.mjs && node --experimental-strip-types src/sse.test.mjs && node --experimental-strip-types src/store.test.mjs && node --experimental-strip-types src/feedback.test.mjs && node --experimental-strip-types src/question.test.mjs",
+    "check": "tsc -b && npm run test:core"
+  },
+  "dependencies": {
+    "@capacitor/cli": "^8.3.4",
+    "@capacitor/core": "^8.3.4",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/ios": "^8.4.1",
+    "@capacitor/local-notifications": "^8.2.0",
+    "@capacitor/push-notifications": "^8.1.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@vitejs/plugin-react": "^6.0.2",
+    "typescript": "5.6.3",
+    "vite": "^8.0.14"
+  }
+}

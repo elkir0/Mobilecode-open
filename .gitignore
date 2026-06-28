@@ -1,0 +1,36 @@
+# Reference clone (external repo, not part of this project)
+reference-android/
+
+# Dependencies
+web/node_modules/
+ios/App/Pods/
+
+# Build output
+web/dist/
+ios/App/build/
+ios/build/
+*.tsbuildinfo
+
+# macOS
+.DS_Store
+
+# Xcode
+*.xcuserstate
+xcuserdata/
+
+# env
+.env
+.env.local
+
+# superpowers brainstorm mockups
+.superpowers/
+.playwright-mcp/
+
+# OpenCodeBar build artifacts
+menubar/build/
+menubar/OpenCodeBar.app
+
+# Local-only handoff & internal design notes (never published)
+CLAUDE.md
+docs/superpowers/
+.claude/

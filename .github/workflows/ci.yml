@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
+# CI — web checks (lint + tests) + an unsigned iOS simulator build.
+# Runs on every push/PR. No Apple signing required.
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    name: Web (tsc + tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install web dependencies
+        run: npm install
+        working-directory: web
+      - run: npm run check
+      - run: npm run test
+
+  ios-simulator:
+    name: iOS (simulator build)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install web dependencies
+        run: npm install
+        working-directory: web
+      - name: Build web + cap sync ios
+        run: npm run build:ios
+      - name: Xcode build (simulator, no signing)
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/App/App.xcodeproj -scheme App \
+            -destination 'generic/platform=iOS Simulator' \
+            -configuration Debug build \
+            CODE_SIGNING_ALLOWED=NO | xcpretty

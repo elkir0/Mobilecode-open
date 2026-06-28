@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+# Run the push relay behind your existing nginx + certbot setup.
+#
+# Before first start:
+#   1. cp .env.example .env  and fill in real values (ADMIN_SECRET, APNS_*).
+#   2. Drop your Apple Auth Key at ./config/AuthKey.p8  (chmod 600, owned by you).
+#   3. docker compose up -d --build
+#   4. Create your first api key:
+#        curl -X POST https://push.shathony.fr/admin/api-keys \
+#          -H "Authorization: Bearer $ADMIN_SECRET" -H 'Content-Type: application/json' \
+#          -d '{"name":"opencodebar"}'
+#      Store the returned mpr_... key — it is shown only once.
+services:
+  relay:
+    build: .
+    container_name: mobilecode-push-relay
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:3000:3000"   # nginx proxies to this; not exposed publicly
+    volumes:
+      - ./data:/app/data         # persist the SQLite DB across rebuilds
+      - ./config:/app/config:ro  # the .p8 Auth Key (read-only)

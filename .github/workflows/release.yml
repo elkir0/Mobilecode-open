@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: Apache-2.0
+# Release — on tag v*, build the app and upload to TestFlight via fastlane.
+# Requires GitHub Actions secrets (see docs/ci.md):
+#   ASC_API_KEY_KEY_ID, ASC_API_KEY_ISSUER_ID, ASC_API_KEY_P8_BASE64
+#   MATCH_PASSWORD, MATCH_GIT_URL
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  testflight:
+    name: Build + upload to TestFlight
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install web dependencies
+        run: npm install
+        working-directory: web
+      - name: Set up Ruby + fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: ios
+      - name: fastlane beta (build + TestFlight)
+        env:
+          ASC_API_KEY_KEY_ID: ${{ secrets.ASC_API_KEY_KEY_ID }}
+          ASC_API_KEY_ISSUER_ID: ${{ secrets.ASC_API_KEY_ISSUER_ID }}
+          ASC_API_KEY_P8_BASE64: ${{ secrets.ASC_API_KEY_P8_BASE64 }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+        run: bundle exec fastlane beta
+        working-directory: ios

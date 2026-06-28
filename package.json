@@ -1,0 +1,18 @@
+{
+  "name": "mobilecode-open",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Mobilecode-open — open-source iOS companion app for opencode serve (Apache-2.0, based on giuliastro/opencode-remote-android)",
+  "scripts": {
+    "build": "cd web && npm run build",
+    "dev": "cd web && npm run dev",
+    "preview": "cd web && npm run preview",
+    "sync": "cd web && npx cap sync ios",
+    "build:ios": "cd web && npm run build && npx cap sync ios",
+    "open:ios": "cd web && npx cap open ios",
+    "check": "cd web && npm run check",
+    "mock": "cd web && npm run mock",
+    "add-plugins": "ruby scripts/add-ios-plugin.rb && ruby scripts/add-widget-target.rb",
+    "test": "cd web && npm run test:core && npm run test:ui"
+  }
+}
